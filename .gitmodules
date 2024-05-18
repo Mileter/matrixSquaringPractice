@@ -1,0 +1,6 @@
+[submodule "lib/gl-matrix"]
+	path = lib/gl-matrix
+	url = https://github.com/toji/gl-matrix.git
+[submodule "lib/MathJax"]
+	path = lib/MathJax
+	url = https://github.com/mathjax/MathJax.git
