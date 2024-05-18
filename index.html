@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Squaring Checker</title>
+    <script src="lib/gl-matrix/dist/gl-matrix.js"></script>
+    <script src="lib/MathJax/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .matrix-container {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .matrix-check input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+        }
+        .latex-matrix {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Matrix Squaring Checker</h1>
+    <label for="matrix-size">Select matrix size:</label>
+    <select id="matrix-size" onchange="initializeMatrices()">
+        <option value="1">1x1</option>
+        <option value="2">2x2</option>
+        <option value="3">3x3</option>
+        <option value="4" selected>4x4</option>
+        <option value="5">5x5</option>
+        <option value="6">6x6</option>
+        <option value="7">7x7</option>
+        <option value="8">8x8</option>
+        <option value="9">9x9</option>
+    </select>
+    <div id="latex-matrix" class="latex-matrix"></div>
+    <div id="matrix-check" class="matrix-container"></div>
+    <button onclick="checkMatrix()">Check Matrix</button>
+    <button onclick="generateNewMatrix()">New Matrix</button>
+    <div id="result"></div>
+    <script>
+        let originalMatrix = [];
+
+        function initializeMatrices() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            generateMatrix(size);
+        }
+
+        function generateMatrix(size) {
+            const matrixCheck = document.getElementById('matrix-check');
+            const latexMatrix = document.getElementById('latex-matrix');
+            matrixCheck.innerHTML = '';
+            latexMatrix.innerHTML = '';
+            matrixCheck.style.gridTemplateColumns = `repeat(${size}, 50px)`;
+
+            // Generate random matrix and display it using LaTeX
+            originalMatrix = [];
+            for (let i = 0; i < size * size; i++) {
+                originalMatrix.push(Math.floor(Math.random() * 5));
+            }
+            displayLatexMatrix(originalMatrix, size);
+
+            // Create input fields for user to input their answers
+            for (let i = 0; i < size * size; i++) {
+                const check = document.createElement('input');
+                check.type = 'number';
+                check.id = `c${i}`;
+                matrixCheck.appendChild(check);
+            }
+        }
+
+        function generateNewMatrix() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            generateMatrix(size);
+        }
+
+        function displayLatexMatrix(matrix, size) {
+            let latex = '\\[\\begin{bmatrix}';
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    latex += matrix[i * size + j];
+                    if (j < size - 1) {
+                        latex += ' & ';
+                    }
+                }
+                if (i < size - 1) {
+                    latex += ' \\\\ ';
+                }
+            }
+            latex += '\\end{bmatrix}^{2}\\]';
+            document.getElementById('latex-matrix').innerHTML = latex;
+            MathJax.typeset();
+        }
+
+        function getMatrixValues(prefix, size) {
+            const matrix = [];
+            for (let i = 0; i < size * size; i++) {
+                matrix.push(parseFloat(document.getElementById(`${prefix}${i}`).value));
+            }
+            return matrix;
+        }
+
+        function squareMatrix(matrix, size) {
+            const resultMatrix = new Array(size * size).fill(0);
+
+            for (let row = 0; row < size; row++) {
+                for (let col = 0; col < size; col++) {
+                    for (let k = 0; k < size; k++) {
+                        resultMatrix[row * size + col] += matrix[row * size + k] * matrix[k * size + col];
+                    }
+                }
+            }
+
+            return resultMatrix;
+        }
+
+        function checkMatrix() {
+            const size = parseInt(document.getElementById('matrix-size').value);
+            const userMatrix = getMatrixValues('c', size);
+            const correctMatrix = squareMatrix(originalMatrix, size);
+
+            let correct = true;
+            for (let i = 0; i < size * size; i++) {
+                if (userMatrix[i] !== correctMatrix[i]) {
+                    correct = false;
+                    break;
+                }
+            }
+
+            const resultDiv = document.getElementById('result');
+            if (correct) {
+                resultDiv.innerText = 'Correct!';
+                resultDiv.style.color = 'green';
+            } else {
+                resultDiv.innerText = 'Incorrect. Try again!';
+                resultDiv.style.color = 'red';
+            }
+        }
+
+        // Initialize with default 4x4 matrix
+        window.onload = initializeMatrices;
+    </script>
+</body>
+</html>
+
