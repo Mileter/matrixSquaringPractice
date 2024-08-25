@@ -46,17 +46,21 @@
         <option value="7">7x7</option>
         <option value="8">8x8</option>
         <option value="9">9x9</option>
+        <option value="10">10x10</option>
+        <option value="11">11x11</option>
+        <option value="12">12x12</option>
     </select>
     <div id="latex-matrix" class="latex-matrix"></div>
     <div id="matrix-check" class="matrix-container"></div>
     <button onclick="checkMatrix()">Check Matrix</button>
-    <button onclick="generateNewMatrix()">New Matrix</button>
+    <button onclick="initializeMatrices()">New Matrix</button>
     <div id="result"></div>
     <script>
         let originalMatrix = [];
 
         function initializeMatrices() {
             const size = parseInt(document.getElementById('matrix-size').value);
+            document.getElementById("result").innerHTML = "";
             generateMatrix(size);
         }
 
@@ -81,11 +85,6 @@
                 check.id = `c${i}`;
                 matrixCheck.appendChild(check);
             }
-        }
-
-        function generateNewMatrix() {
-            const size = parseInt(document.getElementById('matrix-size').value);
-            generateMatrix(size);
         }
 
         function displayLatexMatrix(matrix, size) {
